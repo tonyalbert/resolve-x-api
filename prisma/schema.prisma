@@ -9,6 +9,108 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Company {
+  id   String @id @default(uuid())
+  name String
+  cnpj String
+
+  users     User[]
+  tickets   Ticket[]
+  operators Operator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cnpj])
+  @@map("companies")
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String
+  password String
+  phone    String
+  position String
+  type     String @default("user")
+
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+
+  tickets Ticket[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Interaction Interaction[]
+
+  @@unique([email])
+  @@map("users")
+}
+
+model Operator {
+  id       String @id @default(uuid())
+  name     String
+  email    String
+  password String
+  phone    String
+  position String
+  type     String @default("operator")
+
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+
+  tickets Ticket[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Interaction Interaction[]
+
+  @@unique([email])
+  @@map("operators")
+}
+
+model Ticket {
+  id          String @id @default(uuid())
+  title       String
+  description String
+  status      String @default("open")
+  priority    String @default("low")
+  type        String 
+
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  Operator   Operator? @relation(fields: [operatorId], references: [id])
+  operatorId String?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Interaction Interaction[]
+
+  @@map("tickets")
+}
+
+model Interaction {
+  id          String    @id @default(uuid())
+  message     String
+  sender      String    // indica quem enviou a mensagem: "user" ou "operator"
+  timestamp   DateTime  @default(now())
+
+  operator    Operator  @relation(fields: [operatorId], references: [id])
+  operatorId  String
+
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+
+  ticket      Ticket    @relation(fields: [ticketId], references: [id])
+  ticketId    String
+
+  @@map("interactions")
 }
