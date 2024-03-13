@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-
+import { Public } from 'src/utils/Decorator/Public';
 @Controller('ticket')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
@@ -15,6 +15,7 @@ export class TicketController {
     response.status(201).json({ error: false, message: ticket.message, data: ticket.data })
   }
 
+  @Public()
   @Get()
   async findAll(@Res() response) {
     const tickets = await this.ticketService.findAll();

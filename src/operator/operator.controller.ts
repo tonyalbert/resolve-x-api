@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { OperatorService } from './operator.service';
 import { CreateOperatorDto } from './dto/create-operator.dto';
 import { UpdateOperatorDto } from './dto/update-operator.dto';
+import { Public } from 'src/utils/Decorator/Public';  
 
 @Controller('operator')
 export class OperatorController {
@@ -15,6 +16,7 @@ export class OperatorController {
       response.status(201).json({ error: false, message: createdOperator.message, data: createdOperator.data });
   }
 
+  @Public()
   @Get()
   async findAll(@Res() response) {
     const operators = await this.operatorService.findAll();
@@ -31,6 +33,7 @@ export class OperatorController {
       response.status(200).json({ error: false, message: operator.message, data: operator.data })
   }
 
+  @Public()
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateOperatorDto: UpdateOperatorDto, @Res() response) {
     const updatedOperator = await this.operatorService.update(id, updateOperatorDto);

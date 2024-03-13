@@ -18,6 +18,7 @@ export class UserController {
       response.status(201).json({ error: false, message: createdUser.message, data: createdUser.data })
   }
 
+  @Public()
   @Get()
   async findAll(@Res() response) {
     const users = await this.userService.findAll();
